@@ -64,7 +64,7 @@
       --midi-player-btn-color: #fff;
       --midi-player-btn-hover-bg: #555;
       --midi-player-seek-bar-color: #0af;
-      --midi-player-time-color: #ff2323; /* Đỏ đậm cho thời gian */
+      --midi-player-time-color: #ff2323;
       --midi-player-font-family: sans-serif;
       --midi-player-border-radius: 10px;
     }
@@ -76,10 +76,9 @@
       background: #000;
       display: block;
       margin-top: 10px;
-      margin-bottom: 30px; /* Để cách 3 dòng */
+      margin-bottom: 0px;
     }
 
-    /* Ép màu số thời gian */
     midi-player::part(time) {
       color: #ff2323 !important;
     }
@@ -141,14 +140,13 @@
 <body>
   <h2>🎵 Trình phát MIDI trực tuyến</h2>
   <div id="guide">
-    Hướng dẫn : nhấp vào <span class="highlight">Chọn tệp</span> để load .mid rồi bấm phát
+    Hướng dẫn : nhấp vào <span class="highlight">Chọn tệp</span> để load .mid rồi bấm phát, midi sẽ không có âm thanh nếu đt bật chế độ im lặng
   </div>
   <div id="songName">Chưa chọn bài</div>
   <input type="file" id="fileInput" accept=".mid,.midi">
   <midi-player id="player" sound-font visualizer="#visualizer"></midi-player>
   <midi-visualizer type="piano-roll" id="visualizer"></midi-visualizer>
-
-  <!-- Thêm phần tải MIDI xuống 3 dòng visualizer -->
+  <br><br><br><br><br>
   <div class="download-section">
     <h3>🎼 Một số liên kết tải MIDI:</h3>
     <ul>
@@ -166,13 +164,16 @@
     </div>
   </div>
 
+  <div style="margin-top: 50px; text-align: center;">
+    <a href="https://nhut990.github.io/" style="font-size: 18px; color: #4fc3f7; font-weight: bold; text-decoration: underline;">Trở lại trang chủ</a>
+  </div>
+
   <script>
     const fileInput = document.getElementById('fileInput');
     const player = document.getElementById('player');
     const songName = document.getElementById('songName');
     const visualizer = document.getElementById('visualizer');
 
-    // Đổi màu thời gian trên shadow DOM nếu CSS chưa ăn
     function fixMidiTimeColor() {
       setTimeout(() => {
         const shadow = player.shadowRoot;
@@ -186,7 +187,6 @@
     fileInput.addEventListener('change', function () {
       const file = this.files[0];
       if (file) {
-        // Reset player & visualizer về đầu
         player.currentTime = 0;
         if (typeof visualizer.seekTo === 'function') {
           visualizer.seekTo(0);
@@ -199,7 +199,6 @@
         player.src = url;
         songName.textContent = 'Đang phát: ' + file.name;
 
-        // Đợi nhận file rồi reset lại lần nữa và play
         setTimeout(() => {
           player.currentTime = 0;
           if (typeof visualizer.seekTo === 'function') {
@@ -214,7 +213,6 @@
       }
     });
 
-    // Gọi ngay khi load trang
     fixMidiTimeColor();
   </script>
 </body>
