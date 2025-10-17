@@ -23,6 +23,16 @@
       margin-bottom: 8px;
     }
 
+    #guide {
+      font-size: 16px;
+      color: #ffb400;
+      margin-bottom: 12px;
+    }
+    #guide .highlight {
+      color: #fff;
+      font-weight: bold;
+    }
+
     #songName {
       font-size: 15px;
       color: #ccc;
@@ -43,10 +53,9 @@
       background: #444;
     }
 
-    /* Tùy chỉnh giao diện midi-player */
     midi-player {
       width: 100%;
-      background: #222 !important;       /* nền tối */
+      background: #222 !important;
       border-radius: 10px;
       padding: 6px 0;
       --midi-player-border-color: #333;
@@ -54,8 +63,8 @@
       --midi-player-btn-bg: #333;
       --midi-player-btn-color: #fff;
       --midi-player-btn-hover-bg: #555;
-      --midi-player-seek-bar-color: #0af; /* màu thanh chạy */
-      --midi-player-time-color: #fff;     /* màu thời gian */
+      --midi-player-seek-bar-color: #0af;
+      --midi-player-time-color: #ff2323; /* Đỏ đậm cho thời gian */
       --midi-player-font-family: sans-serif;
       --midi-player-border-radius: 10px;
     }
@@ -67,35 +76,146 @@
       background: #000;
       display: block;
       margin-top: 10px;
+      margin-bottom: 30px; /* Để cách 3 dòng */
+    }
+
+    /* Ép màu số thời gian */
+    midi-player::part(time) {
+      color: #ff2323 !important;
+    }
+    midi-player >>> .time,
+    midi-player ::part(time),
+    midi-player /deep/ .time,
+    midi-player ::-webkit-deep .time {
+      color: #ff2323 !important;
+    }
+
+    .download-section {
+      margin-top: 40px;
+      text-align: left;
+      display: inline-block;
+      background: #222;
+      border-radius: 8px;
+      padding: 16px 24px;
+      color: #eee;
+      box-shadow: 0 4px 16px #0002;
+    }
+    .download-section h3 {
+      color: #ffb400;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+    .download-section ul {
+      padding-left: 18px;
+      margin: 0;
+      text-align: left;
+    }
+    .download-section li {
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .download-section a {
+      color: #4fc3f7;
+      text-decoration: underline;
+      font-weight: bold;
+      word-break: break-all;
+    }
+    .download-section a:hover {
+      color: #ffd700;
+    }
+    .download-more {
+      margin-top: 12px;
+      font-size: 15px;
+    }
+    .download-more a {
+      color: #ffb400;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .download-more a:hover {
+      color: #ffd700;
     }
   </style>
 </head>
 
 <body>
   <h2>🎵 Trình phát MIDI trực tuyến</h2>
-
+  <div id="guide">
+    Hướng dẫn : nhấp vào <span class="highlight">Chọn tệp</span> để load .mid rồi bấm phát
+  </div>
   <div id="songName">Chưa chọn bài</div>
-
   <input type="file" id="fileInput" accept=".mid,.midi">
-
   <midi-player id="player" sound-font visualizer="#visualizer"></midi-player>
-
   <midi-visualizer type="piano-roll" id="visualizer"></midi-visualizer>
+
+  <!-- Thêm phần tải MIDI xuống 3 dòng visualizer -->
+  <div class="download-section">
+    <h3>🎼 Một số liên kết tải MIDI:</h3>
+    <ul>
+      <li>Cho vừa lòng em: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/Cho%20vua%20long%20em.mid" download>Download</a></li>
+      <li>Chút kỷ niệm buồn: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/ChutKyNiemBuon.mid" download>Download</a></li>
+      <li>Câu chuyện đầu năm: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/Cau%20Chuyen%20Dau%20Nam.mid" download>Download</a></li>
+      <li>Giọt lệ đài trang: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/Giot%20le%20dai%20trang.mid" download>Download</a></li>
+      <li>Mưa phi trường: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/Mua%20phi%20truong.midi" download>Download</a></li>
+      <li>Bài ca kỷ niệm: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/bai%20ca%20ky%20niem%20.mid" download>Download</a></li>
+      <li>Tề thiên đại thánh: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/tethien.mid" download>Download</a></li>
+      <li>Lan và điệp: <a href="https://github.com/nhut990/files/raw/refs/heads/main/music/Midi/Lanvadiep.mid" download>Download</a></li>
+    </ul>
+    <div class="download-more">
+      Download thêm midi <a href="https://nhut990.github.io/playmidi/mid/" target="_blank"><b>Tại Đây</b></a>
+    </div>
+  </div>
 
   <script>
     const fileInput = document.getElementById('fileInput');
     const player = document.getElementById('player');
     const songName = document.getElementById('songName');
+    const visualizer = document.getElementById('visualizer');
+
+    // Đổi màu thời gian trên shadow DOM nếu CSS chưa ăn
+    function fixMidiTimeColor() {
+      setTimeout(() => {
+        const shadow = player.shadowRoot;
+        if (shadow) {
+          const timeEls = shadow.querySelectorAll('.time');
+          timeEls.forEach(el => el.style.color = '#ff2323');
+        }
+      }, 500);
+    }
 
     fileInput.addEventListener('change', function () {
       const file = this.files[0];
       if (file) {
+        // Reset player & visualizer về đầu
+        player.currentTime = 0;
+        if (typeof visualizer.seekTo === 'function') {
+          visualizer.seekTo(0);
+        } else {
+          visualizer.currentTime = 0;
+          visualizer.dispatchEvent(new CustomEvent('midi-visualizer-seek', { detail: { currentTime: 0 } }));
+        }
+
         const url = URL.createObjectURL(file);
         player.src = url;
         songName.textContent = 'Đang phát: ' + file.name;
-        player.play();
+
+        // Đợi nhận file rồi reset lại lần nữa và play
+        setTimeout(() => {
+          player.currentTime = 0;
+          if (typeof visualizer.seekTo === 'function') {
+            visualizer.seekTo(0);
+          } else {
+            visualizer.currentTime = 0;
+            visualizer.dispatchEvent(new CustomEvent('midi-visualizer-seek', { detail: { currentTime: 0 } }));
+          }
+          player.play();
+          fixMidiTimeColor();
+        }, 300);
       }
     });
+
+    // Gọi ngay khi load trang
+    fixMidiTimeColor();
   </script>
 </body>
 </html>
